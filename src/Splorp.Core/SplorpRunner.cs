@@ -38,12 +38,12 @@ namespace Splorp.Core
 
                 currentScene!.Draw();
 
-                _canvas.RenderPresent();
-
                 currentScene.UiElements.ForEach(x => {
                     x.Update(currentScene.Mouse);
                     x.Render(_canvas);
                 });
+
+                _canvas.RenderPresent();
 
                 var end = _timer.GetTicks();
                 var durationMs = end - start;

@@ -3,6 +3,8 @@ namespace Splorp.Core.Primitives;
 public class Rectangle : IPositionable, IRotatable
 {
     public Vector2 Position {get; set;}
+    public Vector2 Center => new(Position.X + (Width / 2), Position.Y + (Height / 2));
+    
     public float Rotation {get; set;}
     public float Height {get; set;}
     public float Width {get; set;}

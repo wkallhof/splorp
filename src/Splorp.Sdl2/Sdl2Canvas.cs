@@ -1,8 +1,10 @@
 using System.Runtime.InteropServices;
+using MathNet.Numerics.LinearAlgebra;
 using Splorp.Core;
 using Splorp.Core.Assets;
 using Splorp.Core.Primitives;
 using Splorp.Core.UI.Text;
+using static Splorp.Core.CanvasMath;
 using static Splorp.Sdl2.Interops.SDL;
 using static Splorp.Sdl2.Interops.SDL_gfx;
 using static Splorp.Sdl2.Interops.SDL_image;
@@ -19,11 +21,10 @@ namespace Splorp.Sdl2
 
         public Color DrawColor {get; private set; }
 
-        public Vector2 CurrentTranslation { get; private set; } = new Vector2(0, 0);
-        public Vector2 CurrentScale { get; private set; } = new Vector2(1, 1);
-        public float CurrentRotation { get; private set; } = 0f;
+        public Matrix<float> Transform => _currentTransform;
 
-        private Stack<(Vector2, Vector2, float)> _transformStack;
+        private Matrix<float> _currentTransform = IdentityMatrix;
+        private Stack<Matrix<float>> _transformStack = new();
 
         public Sdl2Canvas(int height, int width){
             Height = height;
@@ -60,7 +61,10 @@ namespace Splorp.Sdl2
             => DrawPixel(position.X, position.Y);
 
         public void DrawPixel(float x, float y)
-            => _ = SDL_RenderDrawPoint(Renderer, (int)x, (int)y);
+        {
+            _currentTransform.ApplyTo(ref x, ref y);
+            _ = SDL_RenderDrawPoint(Renderer, (int)x, (int)y);
+        }
 
         public void DrawText(Vector2 position, string text, Font font, bool multiLine = false, float multiLineWidth = 0)
         {            
@@ -81,6 +85,7 @@ namespace Splorp.Sdl2
             }
             
             var texture = SDL_CreateTextureFromSurface(Renderer, surface);
+            position = _currentTransform.ApplyTo(position);
             var rect = new SDL_Rect{
                 x = (int)position.X,
                 y = (int)position.Y,
@@ -95,8 +100,10 @@ namespace Splorp.Sdl2
 
         public void DrawRect(float x, float y, float w, float h)
         {
-            var rect = new SDL_Rect(){ x = (int)x, y = (int)y, w = (int)w, h = (int)h};
-            SDL_RenderDrawRect(Renderer, ref rect);
+            DrawLine(x, y, x + w, y);
+            DrawLine(x + w, y, x + w, y + h);
+            DrawLine(x + w, y + h, x, y + h);
+            DrawLine(x, y + h, x, y);
         }
 
         public void DrawRect(Rectangle rectangle)
@@ -104,6 +111,7 @@ namespace Splorp.Sdl2
 
         public void FillRect(float x, float y, float w, float h)
         {
+            _currentTransform.ApplyTo(ref x, ref y);
             var rect = new SDL_Rect(){ x = (int)x, y = (int)y, w = (int)w, h = (int)h};
             SDL_RenderFillRect(Renderer, ref rect);
         }
@@ -121,10 +129,11 @@ namespace Splorp.Sdl2
         }
 
         public void StrokeCircle(Circle circle)
-            => DrawCircle(circle.Center, circle.Radius);
+            => StrokeCircle(circle.Center, circle.Radius);
 
-        public void DrawCircle(Vector2 center, float radius)
+        public void StrokeCircle(Vector2 center, float radius)
         {
+            center = _currentTransform.ApplyTo(center);
             var diameter = (radius * 2);
 
             var x = (int)(radius - 1);
@@ -166,6 +175,7 @@ namespace Splorp.Sdl2
 
         public void FillCircle(Vector2 center, float radius)
         {
+            center = _currentTransform.ApplyTo(center);
             float offsetX = 0;
             float offsetY = radius;
             float d = radius -1;
@@ -197,13 +207,23 @@ namespace Splorp.Sdl2
             => DrawLine(start.X, start.Y, end.X, end.Y);
 
         public void DrawLine(float x1, float y1, float x2, float y2)
-            => SDL_RenderDrawLine(Renderer, (int)x1, (int)y1, (int)x2, (int)y2);
+        {
+            _currentTransform.ApplyTo(ref x1, ref y1);
+            _currentTransform.ApplyTo(ref x2, ref y2);
+            _ = SDL_RenderDrawLine(Renderer, (int)x1, (int)y1, (int)x2, (int)y2);
+        }
 
         public void DrawLineWidth(float x1, float y1, float x2, float y2, float width)
-            => thickLineRGBA(Renderer, (short)x1, (short)y1, (short)x2, (short)y2, (byte)width, DrawColor.R, DrawColor.G, DrawColor.B, DrawColor.A);
+        {
+            _currentTransform.ApplyTo(ref x1, ref y1);
+            _currentTransform.ApplyTo(ref x2, ref y2);
+            _ = thickLineRGBA(Renderer, (short)x1, (short)y1, (short)x2, (short)y2, (byte)width, DrawColor.R, DrawColor.G, DrawColor.B, DrawColor.A);
+        }
 
         public void DrawImage(Image image, float x, float y, float? w = null, float? h = null, float rotation = 0.0f)
         {
+            _currentTransform.ApplyTo(ref x, ref y);
+
             var texture = image.Pointer;
 
             SDL_QueryTexture(texture, out var _, out var _, out var sourceWidth, out var sourceHeight);
@@ -239,23 +259,20 @@ namespace Splorp.Sdl2
 
         public void Save()
         {
-            throw new NotImplementedException();
+            _transformStack.Push(_currentTransform);
         }
 
         public void Restore()
         {
-            throw new NotImplementedException();
+            if(_transformStack.Any())
+                _currentTransform = _transformStack.Pop();
         }
 
         public void Translate(Vector2 position)
-        {
-            throw new NotImplementedException();
-        }
+            => _currentTransform = _currentTransform.Translate(position);
 
         public void Translate(float x, float y)
-        {
-            throw new NotImplementedException();
-        }
+            => _currentTransform = _currentTransform.Translate(x, y);
 
         public void Scale(Vector2 amount)
         {
@@ -268,8 +285,6 @@ namespace Splorp.Sdl2
         }
 
         public void Rotate(float angle)
-        {
-            throw new NotImplementedException();
-        }
+            => _currentTransform = _currentTransform.Rotate(angle);
     }
 }

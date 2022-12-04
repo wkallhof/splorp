@@ -1,3 +1,4 @@
+using MathNet.Numerics.LinearAlgebra;
 using Splorp.Core.Primitives;
 
 namespace Splorp.Core;
@@ -54,4 +55,114 @@ public static class CanvasMath
         return polygon1.Points.Any(x => x.IsInside(polygon2));
     }
 
+    public static Matrix<float> IdentityMatrix
+        => M(new[,] {{1f, 0f, 0f },
+                      {0f, 1f, 0f },
+                      {0f, 0f, 1f}});
+
+    public static Matrix<float> Translate(this Matrix<float> matrix, Vector2 amount)
+            => matrix.Translate(amount.X, amount.Y);
+
+    public static Matrix<float> Translate(this Matrix<float> matrix, float x, float y)
+        => matrix * M(new [,] {{1f, 0f, x },
+                               {0f, 1f, y },
+                               {0f, 0f, 1f}});
+
+    public static Matrix<float> Rotate(this Matrix<float> matrix, float radians)
+        => matrix * M(new [,]  {{(float)Math.Cos(radians), (float)-Math.Sin(radians), 0f },
+                                {(float)Math.Sin(radians), (float)Math.Cos(radians), 0f },
+                                {0f, 0f, 1f}});
+
+    public static Matrix<float> ToIdentity(this Matrix<float> _) => IdentityMatrix;
+
+    public static Vector2 ApplyTo(this Matrix<float> matrix, Vector2 input)
+    {
+        var (x, y) = matrix.ApplyTo(input.X, input.Y);
+        return new Vector2(x, y);
+    }
+
+    public static (float x, float y) ApplyTo(this Matrix<float> matrix, float x, float y)
+    {
+        var inputMatrix = M(new[,] { { x }, 
+                                     { y }, 
+                                     { 1f } });
+
+        var outputMatrix = matrix * inputMatrix;
+        return (outputMatrix[0, 0], outputMatrix[1, 0]);
+    }
+
+    public static void ApplyTo(this Matrix<float> matrix, ref float x, ref float y)
+    {
+        var inputMatrix = M(new[,] { { x }, 
+                                     { y }, 
+                                     { 1f } });
+
+        var outputMatrix = matrix * inputMatrix;
+        x = outputMatrix[0, 0];
+        y = outputMatrix[1, 0];
+    }
+
+    private static Matrix<float> M(float[,] matrix)
+        => Matrix<float>.Build.DenseOfArray(matrix);
+
+    public class Transformation {
+
+        private readonly List<Matrix<float>> _transforms = new();
+
+        public Transformation Translate(Vector2 amount)
+            => Translate(amount.X, amount.Y);
+
+        public Transformation Translate(float x, float y)
+        {
+            _transforms.Add(M(new [,] {{1f, 0f, x },
+                                        {0f, 1f, y },
+                                        {0f, 0f, 1f}}));
+            return this;
+        }
+
+        public Transformation Scale(Vector2 amount)
+            => Scale(amount.X, amount.Y);
+
+        public Transformation Scale(float x, float y)
+        {
+            _transforms.Add(M(new [,] {{x, 0f, 0f },
+                                        {0f, y, 0f },
+                                        {0f, 0f, 1f}}));
+            return this;
+        }
+
+        public Transformation Rotate(float radians)
+        {
+            _transforms.Add(M(new [,] {{(float)Math.Cos(radians), (float)Math.Sin(radians), 0f },
+                                        {(float)-Math.Sin(radians), (float)Math.Cos(radians), 0f },
+                                        {0f, 0f, 1f}}));
+            return this;
+        }
+
+        private Matrix<float> M(float[,] matrix)
+            => Matrix<float>.Build.DenseOfArray(matrix);
+
+        public Vector2 Apply(Vector2 input)
+        {
+            if(!_transforms.Any())
+                return input;
+
+            var inputMatrix = M(new[,] { { input.X }, 
+                                         { input.Y }, 
+                                         { 1f      } });
+
+            _transforms.Reverse();
+            var result = _transforms.Aggregate((m1, m2) => m1 * m2);
+            var outputMatrix = result * inputMatrix;
+            _transforms.Reverse();
+
+            return new Vector2(outputMatrix[0, 0], outputMatrix[1, 0]);
+        }
+
+        public Polygon Apply(Polygon input)
+        {
+            input.Points = input.Points.Select(x => Apply(x)).ToList();
+            return input;
+        }
+    }
 }

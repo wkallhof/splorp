@@ -16,8 +16,6 @@ public abstract class Scene
 
     protected ICanvas _canvas { get; set; }
     protected List<GameObject> _gameObjects { get; set; } = new();
-
-    protected TextArea _debugText { get; set; }
     
     protected readonly SceneManager _sceneManager;
     protected readonly IAssetManager _assetManager;

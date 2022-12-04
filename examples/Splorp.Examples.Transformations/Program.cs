@@ -2,6 +2,7 @@
 using Splorp.Core;
 using Splorp.Core.Assets;
 using Splorp.Core.Primitives;
+using Splorp.Core.UI.Text;
 using Splorp.Sdl2;
 
 using var canvas = new Sdl2Canvas(480, 640);
@@ -22,23 +23,34 @@ public class TransformationScene : Scene
     private Polygon _polygon;
     private Polygon _polygon2;
 
+    private Rectangle _rect;
+    private Vector2 _rectPosition;
+
+    private TextArea _debugText;
+
     public TransformationScene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager) : base(canvas, assetManager, sceneManager)
     {
-        _polygon = new Polygon(new()
-        {
-            new(100, 100),
-            new(300, 100),
-            new(300, 300),
-            new(100, 300)
-        });
+        // _polygon = new Polygon(new()
+        // {
+        //     new(100, 100),
+        //     new(300, 100),
+        //     new(300, 300),
+        //     new(100, 300)
+        // });
 
-        _polygon2 = new Polygon(new()
-        {
-            new(150, 50),
-            new(200, 50),
-            new(200, 100),
-            new(150, 100)
-        });
+        // _polygon2 = new Polygon(new()
+        // {
+        //     new(150, 50),
+        //     new(200, 50),
+        //     new(200, 100),
+        //     new(150, 100)
+        // });
+
+        _rect = new Rectangle(300, 300, 50, 50);
+
+        var font = _assetManager.LoadFont("lazy.ttf", 20);
+        _debugText = new TextArea(10, 10, Color.Black, font);
+        UiElements.Add(_debugText);
     }
 
     public override void Draw()
@@ -46,32 +58,47 @@ public class TransformationScene : Scene
         _canvas.Clear();
         _canvas.SetDrawColor(Color.Black);
 
-        var transformation = new Transformation();
-        var box = GetBoundingBox(_polygon);
+        _canvas.Save();
+        _canvas.Translate(_rect.Center);
+        _canvas.Rotate(_rect.Rotation);
+        _canvas.DrawRect(-(_rect.Width / 2), -(_rect.Height / 2), _rect.Width, _rect.Height);
+        _canvas.FillCircle(new Vector2(0, 0), 5);
+        _canvas.Restore();
+
+        _debugText.Text = $"{_rect.Position} {_rect.Rotation}";
+
+        // var transformation = new Transformation();
+        // var box = GetBoundingBox(_polygon);
 
         if(Keyboard.Right.Down)
-            transformation.Translate(5, 0);
+            _rect.Position += new Vector2(1, 0);
 
         if(Keyboard.Left.Down)
-            transformation.Translate(-5, 0);
+            _rect.Position -= new Vector2(1, 0);
 
         if(Keyboard.Up.Down)
-            transformation.Translate(0, -5);
+            _rect.Position -= new Vector2(0, 1);
 
         if(Keyboard.Down.Down)
-            transformation.Translate(0, 5);
+            _rect.Position += new Vector2(0, 1);
 
-        if(Keyboard.S.Down)
-            transformation
-                .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-                .Scale(0.99f, 0.99f)
-                .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
+        if(Keyboard.A.Down)
+            _rect.Rotation -= 0.05f;
 
-        if(Keyboard.W.Down)
-            transformation
-                .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-                .Scale(1.01f, 1.01f)
-                .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
+        if(Keyboard.D.Down)
+            _rect.Rotation += 0.05f;
+
+        // if(Keyboard.S.Down)
+        //     transformation
+        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
+        //         .Scale(0.99f, 0.99f)
+        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
+
+        // if(Keyboard.W.Down)
+        //     transformation
+        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
+        //         .Scale(1.01f, 1.01f)
+        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
 
         // if(Keyboard.R.Pressed)
         // {
@@ -83,26 +110,26 @@ public class TransformationScene : Scene
         //         new(100, 300)
         //     });
         // }
-        
-        _canvas.DrawRect(box);
 
-        if(Keyboard.A.Down)
-            transformation
-                .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-                .Rotate(0.02f)
-                .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
+        // _canvas.DrawRect(box);
 
-        if(Keyboard.D.Down)
-            transformation
-                .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-                .Rotate(-0.02f)
-                .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
+        // if(Keyboard.A.Down)
+        //     transformation
+        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
+        //         .Rotate(0.02f)
+        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
 
-        transformation.Apply(_polygon);
-        transformation.Apply(_polygon2);
+        // if(Keyboard.D.Down)
+        //     transformation
+        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
+        //         .Rotate(-0.02f)
+        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
 
-        _canvas.StrokePolygon(_polygon);
-        _canvas.StrokePolygon(_polygon2);
+        // transformation.Apply(_polygon);
+        // transformation.Apply(_polygon2);
+
+        // _canvas.StrokePolygon(_polygon);
+        // _canvas.StrokePolygon(_polygon2);
     }
 
     private Rectangle GetBoundingBox(Polygon polygon)

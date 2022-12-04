@@ -1,3 +1,4 @@
+using MathNet.Numerics.LinearAlgebra;
 using Splorp.Core.Assets;
 using Splorp.Core.Primitives;
 using Splorp.Core.UI.Text;
@@ -11,9 +12,7 @@ public interface ICanvas : IDisposable {
     public IntPtr Renderer {get; }
     public Color DrawColor {get; }
 
-    public Vector2 CurrentTranslation { get; }
-    public Vector2 CurrentScale { get; }
-    public float CurrentRotation { get; }
+    public Matrix<float> Transform { get; }
 
     public void Save();
     public void Restore();
@@ -46,10 +45,9 @@ public interface ICanvas : IDisposable {
     public void StrokePolygon(Polygon polygon);
 
     public void StrokeCircle(Circle circle);
+    public void StrokeCircle(Vector2 center, float radius);
 
-    public void DrawCircle(Vector2 center, float radius);
     public void FillCircle(Circle circle);
-
     public void FillCircle(Vector2 center, float radius);
 
     public void DrawLine(Vector2 start, Vector2 end);
