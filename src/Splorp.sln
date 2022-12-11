@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splorp.Examples.Sdl2.LazyFo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splorp.Examples.Transformations", "..\examples\Splorp.Examples.Transformations\Splorp.Examples.Transformations.csproj", "{8FBB3CE9-F9E4-4766-A45A-E7E501A431E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splorp.Examples.Football", "..\examples\Splorp.Examples.Football\Splorp.Examples.Football.csproj", "{63097559-662A-4211-ABDF-3991E9791C6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{8FBB3CE9-F9E4-4766-A45A-E7E501A431E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FBB3CE9-F9E4-4766-A45A-E7E501A431E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FBB3CE9-F9E4-4766-A45A-E7E501A431E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63097559-662A-4211-ABDF-3991E9791C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63097559-662A-4211-ABDF-3991E9791C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63097559-662A-4211-ABDF-3991E9791C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63097559-662A-4211-ABDF-3991E9791C6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

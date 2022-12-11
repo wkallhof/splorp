@@ -6,6 +6,7 @@ public class KeyboardState{
     public Key Up {get; set;} = new();
     public Key Down {get; set;} = new();
     public Key Spacebar {get; set;} = new();
+    public Key LeftShift { get; set; } = new();
     public Key A {get; set;} = new();
     public Key W {get; set;} = new();
     public Key S {get; set;} = new();
@@ -15,7 +16,7 @@ public class KeyboardState{
     private List<Key> _keys = new();
 
     public KeyboardState(){
-        _keys = new List<Key>{Left, Right, Up, Down, Spacebar, R, A, W, S, D, R};
+        _keys = new List<Key>{Left, Right, Up, Down, Spacebar, LeftShift, R, A, W, S, D, R};
     }
 
     public class Key{

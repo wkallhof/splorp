@@ -22,7 +22,7 @@ namespace Splorp.Core
 
         public void Run<TScene>() where TScene: Scene
         {
-            var sceneManager = new SceneManager(_canvas, _assetManager);
+            var sceneManager = new SceneManager(_canvas, _assetManager, _timer);
             sceneManager.LoadScene<TScene>();
 
             _inputManager.OnExit = () => Quitting = true;
@@ -52,6 +52,8 @@ namespace Splorp.Core
 
                 var diff = 16 - durationMs;
                 _timer.Delay(Math.Min(diff, 16));
+                var totalTime = _timer.GetTicks();
+                _timer.DeltaTime = (totalTime - start) / 1000f;
             }
         }
     }

@@ -22,9 +22,10 @@ namespace Splorp.Sdl2
         public Color DrawColor {get; private set; }
 
         public Matrix<float> Transform => _currentTransform;
-
         private Matrix<float> _currentTransform = IdentityMatrix;
         private Stack<Matrix<float>> _transformStack = new();
+
+        private Vector2 _currentScale = new(1,1);
 
         public Sdl2Canvas(int height, int width){
             Height = height;
@@ -111,9 +112,10 @@ namespace Splorp.Sdl2
 
         public void FillRect(float x, float y, float w, float h)
         {
-            _currentTransform.ApplyTo(ref x, ref y);
-            var rect = new SDL_Rect(){ x = (int)x, y = (int)y, w = (int)w, h = (int)h};
-            SDL_RenderFillRect(Renderer, ref rect);
+            for (var i = y; i <= y + h; i++)
+            {
+                DrawLine(x, i, x + w, i);
+            }
         }
 
         public void FillRect(Rectangle rectangle)
@@ -134,7 +136,8 @@ namespace Splorp.Sdl2
         public void StrokeCircle(Vector2 center, float radius)
         {
             center = _currentTransform.ApplyTo(center);
-            var diameter = (radius * 2);
+            radius = _currentScale.X * radius;
+            var diameter = radius * 2;
 
             var x = (int)(radius - 1);
             var y = 0;
@@ -145,14 +148,14 @@ namespace Splorp.Sdl2
             while (x >= y)
             {
                 //  Each of the following renders an octant of the circle
-                SDL_RenderDrawPoint(Renderer, (int)center.X + x, (int)center.Y - y);
-                SDL_RenderDrawPoint(Renderer, (int)center.X + x, (int)center.Y + y);
-                SDL_RenderDrawPoint(Renderer, (int)center.X - x, (int)center.Y - y);
-                SDL_RenderDrawPoint(Renderer, (int)center.X - x, (int)center.Y + y);
-                SDL_RenderDrawPoint(Renderer, (int)center.X + y, (int)center.Y - x);
-                SDL_RenderDrawPoint(Renderer, (int)center.X + y, (int)center.Y + x);
-                SDL_RenderDrawPoint(Renderer, (int)center.X - y, (int)center.Y - x);
-                SDL_RenderDrawPoint(Renderer, (int)center.X - y, (int)center.Y + x);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X + x, (int)center.Y - y);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X + x, (int)center.Y + y);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X - x, (int)center.Y - y);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X - x, (int)center.Y + y);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X + y, (int)center.Y - x);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X + y, (int)center.Y + x);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X - y, (int)center.Y - x);
+                _ = SDL_RenderDrawPoint(Renderer, (int)center.X - y, (int)center.Y + x);
 
                 if (error <= 0)
                 {
@@ -173,9 +176,12 @@ namespace Splorp.Sdl2
         public void FillCircle(Circle circle)
             => FillCircle(circle.Position, circle.Radius);
 
+        //TODO: Calculating scale with this is all sorts of wrong. 
         public void FillCircle(Vector2 center, float radius)
         {
             center = _currentTransform.ApplyTo(center);
+            radius = _currentScale.X * radius;
+
             float offsetX = 0;
             float offsetY = radius;
             float d = radius -1;
@@ -226,7 +232,7 @@ namespace Splorp.Sdl2
 
             var texture = image.Pointer;
 
-            SDL_QueryTexture(texture, out var _, out var _, out var sourceWidth, out var sourceHeight);
+            _ = SDL_QueryTexture(texture, out var _, out var _, out var sourceWidth, out var sourceHeight);
 
             if(w.HasValue && !h.HasValue)
                 h = (float)w/((float)sourceWidth/sourceHeight);
@@ -234,13 +240,17 @@ namespace Splorp.Sdl2
             if(h.HasValue && !w.HasValue)
                 w = (float)h*((float)sourceWidth/sourceHeight);
 
+            // part of image to copy to destination. Generally always the full image. Smaller areas if sprite or spritesheet
             var sourceRect = new SDL_Rect() { x = 0, y = 0, w = sourceWidth, h = sourceHeight};
+
+            // where to copy the image to 
             var destRect = new SDL_Rect() { 
                 x = (int)x, 
                 y = (int)y, 
                 w = (int)(w ?? sourceWidth), 
                 h = (int)(h ?? sourceHeight)};
             
+            // center point
             var point = new SDL_Point(){ 
                 x = w.HasValue ? (int)(w/2) : destRect.w / 2, 
                 y = h.HasValue ? (int)(h/2) : destRect.h / 2
@@ -276,12 +286,14 @@ namespace Splorp.Sdl2
 
         public void Scale(Vector2 amount)
         {
-            throw new NotImplementedException();
+            _currentScale = amount;
+            _currentTransform = _currentTransform.Scale(amount);
         }
 
         public void Scale(float x, float y)
         {
-            throw new NotImplementedException();
+            _currentScale = new Vector2(x, y);
+            _currentTransform = _currentTransform.Scale(x, y);
         }
 
         public void Rotate(float angle)

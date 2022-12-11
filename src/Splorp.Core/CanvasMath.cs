@@ -8,6 +8,9 @@ public static class CanvasMath
     public static double DistanceTo(this Vector2 point1, Vector2 point2)
         => Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
 
+    public static float AngleTo(this Vector2 point1, Vector2 point2)
+        => (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
     public static bool IsInside(this Vector2 point, Rectangle rectangle)
         => point.X >= rectangle.Position.X
         && point.X <= rectangle.Position.X + rectangle.Width
@@ -73,6 +76,28 @@ public static class CanvasMath
                                 {(float)Math.Sin(radians), (float)Math.Cos(radians), 0f },
                                 {0f, 0f, 1f}});
 
+    public static Matrix<float> Scale(this Matrix<float> matrix, Vector2 amount)
+            => matrix.Scale(amount.X, amount.Y);
+
+    public static Matrix<float> Scale(this Matrix<float> matrix, float x, float y)
+        => matrix * M(new [,] {{x, 0f, 0f },
+                               {0f, y, 0f },
+                               {0f, 0f, 1f}});
+
+    public static float GetScale(this Matrix<float> matrix)
+    {
+        var point1 = matrix.ApplyTo(new Vector2(0, 0));
+        var point2 = matrix.ApplyTo(new Vector2(0, 1));
+        return (float)point1.DistanceTo(point2);
+    }
+
+    public static float GetRotation(this Matrix<float> matrix)
+    {
+        var point1 = matrix.ApplyTo(new Vector2(0, 0));
+        var point2 = matrix.ApplyTo(new Vector2(0, 1));
+        return point1.AngleTo(point2);
+    }
+
     public static Matrix<float> ToIdentity(this Matrix<float> _) => IdentityMatrix;
 
     public static Vector2 ApplyTo(this Matrix<float> matrix, Vector2 input)
@@ -104,65 +129,4 @@ public static class CanvasMath
 
     private static Matrix<float> M(float[,] matrix)
         => Matrix<float>.Build.DenseOfArray(matrix);
-
-    public class Transformation {
-
-        private readonly List<Matrix<float>> _transforms = new();
-
-        public Transformation Translate(Vector2 amount)
-            => Translate(amount.X, amount.Y);
-
-        public Transformation Translate(float x, float y)
-        {
-            _transforms.Add(M(new [,] {{1f, 0f, x },
-                                        {0f, 1f, y },
-                                        {0f, 0f, 1f}}));
-            return this;
-        }
-
-        public Transformation Scale(Vector2 amount)
-            => Scale(amount.X, amount.Y);
-
-        public Transformation Scale(float x, float y)
-        {
-            _transforms.Add(M(new [,] {{x, 0f, 0f },
-                                        {0f, y, 0f },
-                                        {0f, 0f, 1f}}));
-            return this;
-        }
-
-        public Transformation Rotate(float radians)
-        {
-            _transforms.Add(M(new [,] {{(float)Math.Cos(radians), (float)Math.Sin(radians), 0f },
-                                        {(float)-Math.Sin(radians), (float)Math.Cos(radians), 0f },
-                                        {0f, 0f, 1f}}));
-            return this;
-        }
-
-        private Matrix<float> M(float[,] matrix)
-            => Matrix<float>.Build.DenseOfArray(matrix);
-
-        public Vector2 Apply(Vector2 input)
-        {
-            if(!_transforms.Any())
-                return input;
-
-            var inputMatrix = M(new[,] { { input.X }, 
-                                         { input.Y }, 
-                                         { 1f      } });
-
-            _transforms.Reverse();
-            var result = _transforms.Aggregate((m1, m2) => m1 * m2);
-            var outputMatrix = result * inputMatrix;
-            _transforms.Reverse();
-
-            return new Vector2(outputMatrix[0, 0], outputMatrix[1, 0]);
-        }
-
-        public Polygon Apply(Polygon input)
-        {
-            input.Points = input.Points.Select(x => Apply(x)).ToList();
-            return input;
-        }
-    }
 }

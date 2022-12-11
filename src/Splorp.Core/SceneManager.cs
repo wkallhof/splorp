@@ -8,15 +8,17 @@ public class SceneManager
 
     private readonly ICanvas _canvas;
     private readonly IAssetManager _assetManager;
+    private readonly ITimer _timer;
 
-    public SceneManager(ICanvas canvas, IAssetManager assetManager)
+    public SceneManager(ICanvas canvas, IAssetManager assetManager, ITimer timer)
     {
         _canvas = canvas;
         _assetManager = assetManager;
+        _timer = timer;
     }
 
     public void LoadScene<T>() where T : Scene
     {
-        CurrentScene = (Scene?)Activator.CreateInstance(typeof(T), _canvas, _assetManager, this);
+        CurrentScene = (Scene?)Activator.CreateInstance(typeof(T), _canvas, _assetManager, this, _timer);
     }
 }

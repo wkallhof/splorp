@@ -20,11 +20,16 @@ public class Vector2
             y:(float)(Math.Sin(radians) * (X - center.X) + Math.Cos(radians) * (Y - center.Y) + center.Y)
         );
 
-    public Vector2 Right()
+    public Vector2 PerpRight()
+        => new(-Y, X);
+
+    public Vector2 PerpLeft()
         => new(Y, -X);
 
-    public Vector2 Left()
-        => new(-Y, X);
+    public static Vector2 Right => new(1, 0);
+    public static Vector2 Left => new(-1, 0);
+    public static Vector2 Up => new(0, -1);
+    public static Vector2 Down => new(0, 1);
 
     public static Vector2 operator +(Vector2 vector1, Vector2 vector2)
         => new(vector1.X + vector2.X, vector1.Y + vector2.Y);

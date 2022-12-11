@@ -42,6 +42,7 @@ namespace Splorp.Sdl2
                 case SDL_Keycode.SDLK_UP : UpdateKey(keyboard.Up, keyboardEvent.type); break;
                 case SDL_Keycode.SDLK_DOWN : UpdateKey(keyboard.Down, keyboardEvent.type); break;
                 case SDL_Keycode.SDLK_SPACE : UpdateKey(keyboard.Spacebar, keyboardEvent.type); break;
+                case SDL_Keycode.SDLK_LSHIFT: UpdateKey(keyboard.LeftShift, keyboardEvent.type); break;
                 case SDL_Keycode.SDLK_w : UpdateKey(keyboard.W, keyboardEvent.type); break;
                 case SDL_Keycode.SDLK_a : UpdateKey(keyboard.A, keyboardEvent.type); break;
                 case SDL_Keycode.SDLK_s : UpdateKey(keyboard.S, keyboardEvent.type); break;

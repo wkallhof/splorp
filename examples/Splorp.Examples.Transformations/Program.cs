@@ -1,5 +1,4 @@
-﻿using MathNet.Numerics.LinearAlgebra;
-using Splorp.Core;
+﻿using Splorp.Core;
 using Splorp.Core.Assets;
 using Splorp.Core.Primitives;
 using Splorp.Core.UI.Text;
@@ -20,33 +19,23 @@ splorp.Run<TransformationScene>();
 
 public class TransformationScene : Scene
 {
-    private Polygon _polygon;
-    private Polygon _polygon2;
-
-    private Rectangle _rect;
-    private Vector2 _rectPosition;
-
     private TextArea _debugText;
+
+    private float _zoom = 1;
+    
+    private Rectangle _camera;
+
+    private float _rotation = 0;
+
+    private Vector2 _rightVector;
+
+    private List<Rectangle> _rectangles = new();
 
     public TransformationScene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager) : base(canvas, assetManager, sceneManager)
     {
-        // _polygon = new Polygon(new()
-        // {
-        //     new(100, 100),
-        //     new(300, 100),
-        //     new(300, 300),
-        //     new(100, 300)
-        // });
 
-        // _polygon2 = new Polygon(new()
-        // {
-        //     new(150, 50),
-        //     new(200, 50),
-        //     new(200, 100),
-        //     new(150, 100)
-        // });
-
-        _rect = new Rectangle(300, 300, 50, 50);
+        _camera = new Rectangle(0, 0, _canvas.Width, _canvas.Height);
+        _rightVector = new Vector2(_camera.Position.X + _camera.Width, _camera.Center.Y);
 
         var font = _assetManager.LoadFont("lazy.ttf", 20);
         _debugText = new TextArea(10, 10, Color.Black, font);
@@ -59,147 +48,85 @@ public class TransformationScene : Scene
         _canvas.SetDrawColor(Color.Black);
 
         _canvas.Save();
-        _canvas.Translate(_rect.Center);
-        _canvas.Rotate(_rect.Rotation);
-        _canvas.DrawRect(-(_rect.Width / 2), -(_rect.Height / 2), _rect.Width, _rect.Height);
-        _canvas.FillCircle(new Vector2(0, 0), 5);
+
+        _canvas.Translate(_camera.Position * -1);
+
+        _canvas.Translate(_camera.Center);
+        //_canvas.Scale(_zoom, _zoom);
+        _canvas.Rotate(-_camera.Rotation);
+        _canvas.Translate(_camera.Center * -1);
+
+        _canvas.DrawRect(_camera);
+
+        _rectangles.ForEach(x => RenderRectangle(x));
+
         _canvas.Restore();
 
-        _debugText.Text = $"{_rect.Position} {_rect.Rotation}";
+        HandleInput();
+    }
 
-        // var transformation = new Transformation();
-        // var box = GetBoundingBox(_polygon);
+    private void RenderRectangle(Rectangle rectangle)
+    {
+        _canvas.Save();
+        _canvas.Translate(rectangle.Center);
+        _canvas.Rotate(rectangle.Rotation);
+        _canvas.FillRect(-(rectangle.Width / 2), -(rectangle.Height / 2), rectangle.Width, rectangle.Height);
+        _canvas.Restore();
+    }
 
+    private Vector2 GetWorldCoordinates(Vector2 input)
+    {
+        _canvas.Save();
+
+        _canvas.Translate(_camera.Position);
+
+        //_canvas.Translate(_camera.Center);
+        //_canvas.Scale(_zoom, _zoom);
+        //_canvas.Rotate(-_camera.Rotation);
+       // _canvas.Translate(_camera.Center * -1);
+        var newCoordinates = _canvas.Transform.ApplyTo(input);
+        _canvas.Restore();
+        return newCoordinates;
+    }
+
+    private void HandleInput()
+    {
         if(Keyboard.Right.Down)
-            _rect.Position += new Vector2(1, 0);
+            _camera.Position += new Vector2(1, 0);
 
         if(Keyboard.Left.Down)
-            _rect.Position -= new Vector2(1, 0);
+            _camera.Position -= new Vector2(1, 0);
 
         if(Keyboard.Up.Down)
-            _rect.Position -= new Vector2(0, 1);
+            _camera.Position -= new Vector2(0, 1);
 
         if(Keyboard.Down.Down)
-            _rect.Position += new Vector2(0, 1);
+            _camera.Position += new Vector2(0, 1);
 
         if(Keyboard.A.Down)
-            _rect.Rotation -= 0.05f;
+            _camera.Rotation -= 0.02f;
 
         if(Keyboard.D.Down)
-            _rect.Rotation += 0.05f;
+            _camera.Rotation += 0.02f;
 
-        // if(Keyboard.S.Down)
-        //     transformation
-        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-        //         .Scale(0.99f, 0.99f)
-        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
+        if(Keyboard.W.Down)
+            _zoom *= 1.02f;
+            
+        if(Keyboard.S.Down)
+            _zoom /= 1.02f;
 
-        // if(Keyboard.W.Down)
-        //     transformation
-        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-        //         .Scale(1.01f, 1.01f)
-        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
-
-        // if(Keyboard.R.Pressed)
-        // {
-        //     _polygon = new Polygon(new List<Vector2>()
-        //     {
-        //         new(100, 100),
-        //         new(300, 100),
-        //         new(300, 300),
-        //         new(100, 300)
-        //     });
-        // }
-
-        // _canvas.DrawRect(box);
-
-        // if(Keyboard.A.Down)
-        //     transformation
-        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-        //         .Rotate(0.02f)
-        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
-
-        // if(Keyboard.D.Down)
-        //     transformation
-        //         .Translate(-(box.Position.X + box.Width / 2), -(box.Position.Y + box.Height / 2))
-        //         .Rotate(-0.02f)
-        //         .Translate(box.Position.X + box.Width / 2, box.Position.Y + box.Height / 2);
-
-        // transformation.Apply(_polygon);
-        // transformation.Apply(_polygon2);
-
-        // _canvas.StrokePolygon(_polygon);
-        // _canvas.StrokePolygon(_polygon2);
-    }
-
-    private Rectangle GetBoundingBox(Polygon polygon)
-    {
-        var lowestX = polygon.Points.OrderBy(x => x.X).First().X;
-        var lowestY = polygon.Points.OrderBy(x => x.Y).First().Y;
-        var largestX = polygon.Points.OrderByDescending(x => x.X).First().X;
-        var largestY = polygon.Points.OrderByDescending(x => x.Y).First().Y;
-
-        return new Rectangle(lowestX, lowestY, largestY - lowestY, largestX - lowestX);
-    }
-
-    private class Transformation {
-
-        private readonly List<Matrix<float>> _transforms = new();
-
-        public Transformation Translate(Vector2 amount)
-            => Translate(amount.X, amount.Y);
-
-        public Transformation Translate(float x, float y)
+        if(Keyboard.R.Down)
         {
-            _transforms.Add(M(new [,] {{1f, 0f, x },
-                                        {0f, 1f, y },
-                                        {0f, 0f, 1f}}));
-            return this;
+            _zoom = 1;
+            _camera.Rotation = 0;
+            _camera.Position = new Vector2(0, 0);
+            _rectangles.Clear();
         }
 
-        public Transformation Scale(Vector2 amount)
-            => Scale(amount.X, amount.Y);
-
-        public Transformation Scale(float x, float y)
+        if(Mouse.LeftButtonDown)
         {
-            _transforms.Add(M(new [,] {{x, 0f, 0f },
-                                        {0f, y, 0f },
-                                        {0f, 0f, 1f}}));
-            return this;
-        }
-
-        public Transformation Rotate(float radians)
-        {
-            _transforms.Add(M(new [,] {{(float)Math.Cos(radians), (float)Math.Sin(radians), 0f },
-                                        {(float)-Math.Sin(radians), (float)Math.Cos(radians), 0f },
-                                        {0f, 0f, 1f}}));
-            return this;
-        }
-
-        private Matrix<float> M(float[,] matrix)
-            => Matrix<float>.Build.DenseOfArray(matrix);
-
-        public Vector2 Apply(Vector2 input)
-        {
-            if(!_transforms.Any())
-                return input;
-
-            var inputMatrix = M(new[,] { { input.X }, 
-                                         { input.Y }, 
-                                         { 1f      } });
-
-            _transforms.Reverse();
-            var result = _transforms.Aggregate((m1, m2) => m1 * m2);
-            var outputMatrix = result * inputMatrix;
-            _transforms.Reverse();
-
-            return new Vector2(outputMatrix[0, 0], outputMatrix[1, 0]);
-        }
-
-        public Polygon Apply(Polygon input)
-        {
-            input.Points = input.Points.Select(x => Apply(x)).ToList();
-            return input;
+            var position = GetWorldCoordinates(Mouse.Position);
+            _rectangles.Add(new Rectangle(position, 10, 10));
         }
     }
 }
