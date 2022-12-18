@@ -28,7 +28,7 @@ public interface ICanvas : IDisposable {
     public void Resize(int width, int height);
 
     public void RenderPresent();
-    public void Clear();
+    public void Clear(Color? color = null);
     public void SetDrawColor(Color color);
 
     public void DrawPixel(Vector2 position);

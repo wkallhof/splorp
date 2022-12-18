@@ -1,3 +1,5 @@
+using Splorp.Core.Assets;
+using Splorp.Core.Physics.Bodies;
 using Splorp.Core.Primitives;
 
 namespace Splorp.Core;
@@ -8,6 +10,7 @@ public abstract class GameObject
     public Transform Transform { get; set; }
     public GameObject? Parent { get; set; }
     public List<GameObject> Children { get; set; } = new();
+    public RigidBody? RigidBody { get; set; }
 
     public GameObject()
     {
@@ -31,6 +34,11 @@ public abstract class GameObject
     {
         Children.Add(child);
         child.Parent = this;
+    }
+
+    public void Update()
+    {
+        RigidBody?.Update();
     }
 
     public abstract void Render(ICanvas canvas);

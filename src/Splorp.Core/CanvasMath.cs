@@ -5,8 +5,8 @@ namespace Splorp.Core;
 
 public static class CanvasMath
 {
-    public static double DistanceTo(this Vector2 point1, Vector2 point2)
-        => Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
+    public static float DistanceTo(this Vector2 point1, Vector2 point2)
+        => (float)Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
 
     public static float AngleTo(this Vector2 point1, Vector2 point2)
         => (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
@@ -88,7 +88,7 @@ public static class CanvasMath
     {
         var point1 = matrix.ApplyTo(new Vector2(0, 0));
         var point2 = matrix.ApplyTo(new Vector2(0, 1));
-        return (float)point1.DistanceTo(point2);
+        return point1.DistanceTo(point2);
     }
 
     public static float GetRotation(this Matrix<float> matrix)

@@ -58,6 +58,10 @@ public class FootballScene : Scene
 
     private void HandleInput()
     {
+        if(Keyboard.R.Down)
+        {
+            _sceneManager.ResetCurrentScene();
+        }
 
         if(Keyboard.Up.Down)
             Player1.Transform.Position += Player1.Transform.Forward * Player1.ForwardSpeed * _timer.DeltaTime;

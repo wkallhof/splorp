@@ -48,13 +48,14 @@ namespace Splorp.Sdl2
             SDL_RenderPresent(Renderer);
         }
 
-        public void Clear(){
-            _ = SDL_SetRenderDrawColor(Renderer, 255, 255, 255, 255);
+        public void Clear(Color? color = null){
+            color ??= Color.White;
+            _ = SDL_SetRenderDrawColor(Renderer, color.R, color.G, color.B, color.A);
             _ = SDL_RenderClear(Renderer);
         }
 
         public void SetDrawColor(Color color){
-            SDL_SetRenderDrawColor(Renderer, color.R, color.G, color.B, color.A);
+            _ = SDL_SetRenderDrawColor(Renderer, color.R, color.G, color.B, color.A);
             DrawColor = color;
         }
 

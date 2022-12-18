@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/examples/Splorp.Examples.Football/bin/Debug/net7.0/Splorp.Examples.Football.dll",
+            "program": "${workspaceFolder}/examples/Splorp.Examples.Physics/bin/Debug/net7.0/Splorp.Examples.Physics.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/examples/Splorp.Examples.Football",
+            "cwd": "${workspaceFolder}/examples/Splorp.Examples.Physics",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

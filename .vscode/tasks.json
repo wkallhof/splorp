@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/examples/Splorp.Examples.Football/Splorp.Examples.Football.csproj",
+                "${workspaceFolder}/examples/Splorp.Examples.Physics/Splorp.Examples.Physics.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/examples/Splorp.Examples.Football/Splorp.Examples.Football.csproj",
+                "${workspaceFolder}/examples/Splorp.Examples.Physics/Splorp.Examples.Physics.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/examples/Splorp.Examples.Football/Splorp.Examples.Football.csproj"
+                "${workspaceFolder}/examples/Splorp.Examples.Physics/Splorp.Examples.Physics.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

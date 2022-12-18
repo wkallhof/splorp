@@ -18,7 +18,13 @@ public class SceneManager
     }
 
     public void LoadScene<T>() where T : Scene
+        => LoadScene(typeof(T));
+
+    public void LoadScene(Type sceneType)
     {
-        CurrentScene = (Scene?)Activator.CreateInstance(typeof(T), _canvas, _assetManager, this, _timer);
+        CurrentScene = (Scene?)Activator.CreateInstance(sceneType, _canvas, _assetManager, this, _timer);
     }
+
+    public void ResetCurrentScene()
+        => LoadScene(CurrentScene!.GetType());
 }
