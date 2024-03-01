@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splorp.Examples.Football", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splorp.Examples.Physics", "..\examples\Splorp.Examples.Physics\Splorp.Examples.Physics.csproj", "{01A1280F-5C20-44DD-BD22-2934D4608FDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splorp.Core.Tests", "..\tests\Splorp.Core.Tests\Splorp.Core.Tests.csproj", "{A619089D-4023-4000-861F-87EC3789F2CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{01A1280F-5C20-44DD-BD22-2934D4608FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01A1280F-5C20-44DD-BD22-2934D4608FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01A1280F-5C20-44DD-BD22-2934D4608FDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A619089D-4023-4000-861F-87EC3789F2CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A619089D-4023-4000-861F-87EC3789F2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A619089D-4023-4000-861F-87EC3789F2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A619089D-4023-4000-861F-87EC3789F2CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

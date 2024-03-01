@@ -4,7 +4,7 @@ using Splorp.Core;
 using Splorp.Core.Assets;
 using Splorp.Core.Primitives;
 using Splorp.Core.UI.Text;
-using static Splorp.Core.CanvasMath;
+using static Splorp.Core.SplorpMath;
 using static Splorp.Sdl2.Interops.SDL;
 using static Splorp.Sdl2.Interops.SDL_gfx;
 using static Splorp.Sdl2.Interops.SDL_image;

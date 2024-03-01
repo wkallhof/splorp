@@ -3,7 +3,7 @@ using Splorp.Core.Primitives;
 
 namespace Splorp.Core;
 
-public static class CanvasMath
+public static class SplorpMath
 {
     public static float DistanceTo(this Vector2 point1, Vector2 point2)
         => (float)Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
@@ -32,6 +32,9 @@ public static class CanvasMath
 
     public static float DegreesToRadians(this float degrees)
         => (float)(Math.PI / 180) * degrees;
+
+    public static float RadiansToDegrees(this float radians)
+        => (float)(radians * (180 / Math.PI));
 
     public static float NextFloat(this Random random, float min, float max)
         => (float)random.NextDouble() * (max - min) + min;
@@ -76,6 +79,9 @@ public static class CanvasMath
                                 {(float)Math.Sin(radians), (float)Math.Cos(radians), 0f },
                                 {0f, 0f, 1f}});
 
+    public static Matrix<float> Scale(this Matrix<float> matrix, float amount)
+        => matrix.Scale(amount, amount);
+
     public static Matrix<float> Scale(this Matrix<float> matrix, Vector2 amount)
             => matrix.Scale(amount.X, amount.Y);
 
@@ -93,10 +99,11 @@ public static class CanvasMath
 
     public static float GetRotation(this Matrix<float> matrix)
     {
-        var point1 = matrix.ApplyTo(new Vector2(0, 0));
-        var point2 = matrix.ApplyTo(new Vector2(0, 1));
-        return point1.AngleTo(point2);
+        return (float)Math.Atan2(-matrix[0, 1], matrix[0, 0]);
     }
+
+    public static Vector2 GetTranslation(this Matrix<float> matrix)
+        => new (x: matrix[0, 2], y: matrix[1, 2]);
 
     public static Matrix<float> ToIdentity(this Matrix<float> _) => IdentityMatrix;
 

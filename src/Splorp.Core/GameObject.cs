@@ -8,6 +8,7 @@ public abstract class GameObject
 {
     public Guid Id { get; init; }
     public Transform Transform { get; set; }
+    public Transform WorldTransform => Parent != null ? Parent.WorldTransform * Transform  : Transform;
     public GameObject? Parent { get; set; }
     public List<GameObject> Children { get; set; } = new();
     public RigidBody? RigidBody { get; set; }

@@ -7,7 +7,7 @@ namespace Splorp.Examples.Sdl2.LazyFooLessons.Lesson2
     {
         private readonly Image _textureImage;
 
-        public Lesson7Scene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager) : base(canvas, assetManager, sceneManager){
+        public Lesson7Scene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager, ITimer timer) : base(canvas, assetManager, sceneManager, timer){
             _textureImage = assetManager.LoadImage("./Lesson7/texture.png");
         }
 

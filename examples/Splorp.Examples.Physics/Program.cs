@@ -22,7 +22,7 @@ public class PhysicsScene : Scene
 {
     private TextArea _debugText;
 
-    private Physics.Circle _playerCircle;
+    private Physics.Square _playerCircle;
     private float _playerSpeed = 5;
 
     public PhysicsScene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager, ITimer timer) : base(canvas, assetManager, sceneManager, timer)
@@ -34,19 +34,58 @@ public class PhysicsScene : Scene
 
         var random = new Random();
 
-        for (var i = 0; i < 20; i++)
-        {
-            var randomX = random.NextFloat(50, canvas.Width - 50);
-            var randomY = random.NextFloat(50, canvas.Height - 50);
+        // for (var i = 0; i < 20; i++)
+        // {
+        //     var randomX = random.NextFloat(50, canvas.Width - 50);
+        //     var randomY = random.NextFloat(50, canvas.Height - 50);
 
-            _gameObjects.Add(new Physics.Circle(
-                position: new Vector2(randomX, randomY),
+        //     _gameObjects.Add(new Physics.Circle(
+        //         position: new Vector2(randomX, randomY),
+        //         rotation: random.NextFloat(0, 360),
+        //         mass: random.NextFloat(1, 5),
+        //         font: font,
+        //         color: Color.Random()));
+        // }
+
+        // for (var i = 0; i < 10; i++)
+        // {
+        //     var randomX = random.NextFloat(50, canvas.Width - 50);
+        //     var randomY = random.NextFloat(50, canvas.Height - 50);
+
+        //     _gameObjects.Add(new Physics.Square(
+        //         position: new Vector2(randomX, randomY),
+        //         height: random.NextFloat(10, 50),
+        //         width: random.NextFloat(10, 50),
+        //         rotation: random.NextFloat(0, 360),
+        //         mass: random.NextFloat(1, 5),
+        //         font: font,
+        //         color: Color.Random()));
+        // }
+
+        //_playerCircle = _gameObjects.OfType<Physics.Square>().First();
+
+        _playerCircle = new Physics.Square(
+                position: new Vector2(200, 200),
+                height: random.NextFloat(10, 50),
+                width: random.NextFloat(10, 50),
+                rotation: random.NextFloat(0, 360),
                 mass: random.NextFloat(1, 5),
                 font: font,
-                color: Color.Random()));
-        }
+                color: Color.Random());
 
-        _playerCircle = _gameObjects.OfType<Physics.Circle>().First();
+        var child = new Physics.Square(
+                position: new Vector2(15, 0),
+                height: random.NextFloat(10, 50),
+                width: random.NextFloat(10, 50),
+                rotation: random.NextFloat(0, 360),
+                mass: random.NextFloat(1, 5),
+                font: font,
+                color: Color.Random());
+
+        _playerCircle.AddChild(child);
+
+        _gameObjects.Add(_playerCircle);
+        _gameObjects.Add(child);
     }
 
     public override void Draw()
@@ -79,8 +118,8 @@ public class PhysicsScene : Scene
         _gameObjects.ForEach(x => 
         {
             _canvas.Save();
-            _canvas.Translate(x.Transform.Position);
-            _canvas.Rotate(x.Transform.Rotation.DegreesToRadians());
+            _canvas.Translate(x.WorldTransform.Position);
+            _canvas.Rotate(x.WorldTransform.Rotation.DegreesToRadians());
             x.Update();
             x.Render(_canvas);
             _canvas.Restore();
@@ -106,6 +145,12 @@ public class PhysicsScene : Scene
 
         if(Keyboard.Down.Down)
             _playerCircle.RigidBody!.Velocity += Vector2.Down * _playerSpeed * _timer.DeltaTime;
+
+        if(Keyboard.D.Down)
+            _playerCircle.Transform.Rotation += 50 * _timer.DeltaTime;
+
+        if(Keyboard.A.Down)
+            _playerCircle.Transform.Rotation -= 50 * _timer.DeltaTime;
     }
 }
 

@@ -11,7 +11,7 @@ namespace Splorp.Examples.Sdl2.LazyFooLessons.Lesson2
         private readonly Image _rightImage;
         private readonly Image _defaultImage;
 
-        public Lesson4Scene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager) : base(canvas, assetManager, sceneManager){
+        public Lesson4Scene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager, ITimer timer) : base(canvas, assetManager, sceneManager, timer){
             _upImage = assetManager.LoadImage("./Lesson4/Assets/up.bmp");
             _downImage = assetManager.LoadImage("./Lesson4/Assets/down.bmp");
             _leftImage = assetManager.LoadImage("./Lesson4/Assets/left.bmp");

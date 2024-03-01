@@ -31,7 +31,7 @@ public class TransformationScene : Scene
 
     private List<Rectangle> _rectangles = new();
 
-    public TransformationScene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager) : base(canvas, assetManager, sceneManager)
+    public TransformationScene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager, ITimer timer) : base(canvas, assetManager, sceneManager, timer)
     {
 
         _camera = new Rectangle(0, 0, _canvas.Width, _canvas.Height);

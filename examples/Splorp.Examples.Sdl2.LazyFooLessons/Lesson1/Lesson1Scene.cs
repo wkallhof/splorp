@@ -6,7 +6,7 @@ namespace Splorp.Examples.Sdl2.LazyFooLessons.Lesson1;
 
 public class Lesson1Scene : Scene
 {
-    public Lesson1Scene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager) : base(canvas, assetManager, sceneManager){}
+    public Lesson1Scene(ICanvas canvas, IAssetManager assetManager, SceneManager sceneManager, ITimer timer) : base(canvas, assetManager, sceneManager, timer){}
 
     public override void Draw()
     {

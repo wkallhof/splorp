@@ -13,7 +13,7 @@ public class Circle : GameObject
 
     public float Radius { get; init; }
 
-    public Circle(Vector2 position, float mass, Font font, Color color) : base(position)
+    public Circle(Vector2 position, float mass, Font font, Color color, float rotation) : base(position, rotation: rotation)
     {
         _font = font;
         _color = color;
@@ -29,7 +29,9 @@ public class Circle : GameObject
         canvas.FillCircle(new Vector2(0,0), Radius);
 
         canvas.SetDrawColor(Color.White);
-        canvas.DrawText(new Vector2(0,0), Id.ToString()[..4], _font);
+        canvas.DrawText(new Vector2(0,0), Transform.Rotation.ToString(), _font);
+
+        canvas.DrawLine(Vector2.Zero, Transform.Forward * Radius);
     }
 
     public bool IsCollidingWith(Circle circle)
